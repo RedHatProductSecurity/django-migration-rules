@@ -1,0 +1,18 @@
+rules:
+  - id: django-migration-remove-field
+    patterns:
+      - pattern: migrations.RemoveField(...)
+      - pattern-inside: operations = [...]
+      - pattern-not-inside: migrations.SeparateDatabaseAndState(..., state_operations=[...], ...)
+    message: A field should only be removed in two steps, the first being a
+      state-only removal and the second being an SQL-only removal, each step
+      in a different version of the application to guarantee backwards compatibility.
+      If the field has a NOT NULL constraint, it should be dropped prior to the
+      state removal or alternatively, an SQL default value provided.
+    languages:
+      - python
+    severity: ERROR
+    metadata:
+      category: best-practice
+      technology:
+        - django
