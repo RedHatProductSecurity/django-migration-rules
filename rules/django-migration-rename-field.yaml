@@ -1,0 +1,50 @@
+rules:
+  - id: django-migration-rename-field
+    patterns:
+      - pattern-not: |
+          operations = [
+            ...,
+            migrations.RenameField(
+              ...,
+              model_name=$M,
+              ...,
+              old_name=$O,
+              ...,
+              new_name=$N,
+              ...
+            ),
+            ...,
+            migrations.AlterField(
+              ...,
+              model_name=$M,
+              ...,
+              name=$N,
+              ...,
+              field=$F(..., db_column=$O, ...),
+              ...
+            ),
+          ]
+      - pattern-not: |
+          migrations.SeparateDatabaseAndSate(
+            ...,
+            state_operations=[
+              ...,
+              migrations.RenameField(...),
+              ...
+            ],
+            ...
+          )
+      - pattern: |
+          operations = [
+            ...,
+            migrations.RenameField(...),
+            ...
+          ]
+    message: A field rename should only be done at the state-level
+    languages:
+      - python
+    severity: ERROR
+    metadata:
+      category: best-practice
+      technology:
+        - django
