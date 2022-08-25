@@ -1,0 +1,9 @@
+name: test
+on: [push]
+jobs:
+  test-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install semgrep
+      - run: semgrep -f rules/ --test rules/
